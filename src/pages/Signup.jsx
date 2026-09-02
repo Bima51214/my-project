@@ -60,8 +60,8 @@ export default function Signup() {
       });
       setMessage(
         data.email_sent
-          ? "Account created! Check your email for the confirmation link, then log in."
-          : "Account created! Check your email for the confirmation link, then log in."
+          ? "Account created successfully! You can now log in."
+          : "Account created successfully! You can now log in."
       );
       setTimeout(() => navigate("/login"), 6000);
     } catch (err) {
