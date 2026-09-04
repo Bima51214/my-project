@@ -20,7 +20,7 @@ const App = () => {
   return (
     <Router>
       <div className={`${isDark ? 'dark' : ''}`}>
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-500">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-500">
           <Navbar isDark={isDark} setIsDark={setIsDark} />
 
           <Routes>

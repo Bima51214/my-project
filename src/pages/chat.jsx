@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from "react-router-dom";
 import { t } from '../translations';
 import {
   solveQuestion,
@@ -835,10 +836,12 @@ const Chat = ({ isDark = false, setIsDark }) => {
   const loggedIn = isLoggedIn();
   const sidebarVisible = loggedIn && (isMobile ? sidebarOpen : !sidebarCollapsed);
 
-  return (
+   return (
     <div
       className={`flex overflow-hidden bg-slate-50 dark:bg-slate-900 ${
-        loggedIn ? "fixed inset-0 z-30 h-dvh w-full" : "h-[calc(100vh-57px)]"
+        loggedIn
+          ? "fixed inset-0 z-30 h-dvh w-full"
+          : "h-[calc(100vh-57px)]"
       }`}
     >
       {loggedIn && (
@@ -855,7 +858,8 @@ const Chat = ({ isDark = false, setIsDark }) => {
           !isMobile && sidebarVisible ? "md:ml-[260px]" : ""
         }`}
       >
-      <header className="absolute top-0 left-0 right-0 z-30 flex items-center h-14 px-2 pointer-events-none">
+        {/* Header */}
+        <header className="absolute top-0 left-0 right-0 z-30 flex items-center h-14 px-2 pointer-events-none">
           <div className="flex items-center min-w-0 pointer-events-auto">
             {loggedIn && (
               <SidebarToggle
@@ -864,10 +868,12 @@ const Chat = ({ isDark = false, setIsDark }) => {
                 className="flex shrink-0"
               />
             )}
+
             <span className="ml-1 text-sm font-semibold text-gray-800 dark:text-gray-200 truncate hidden sm:inline">
               Math<span className="text-[#5d44f8]">Vox</span>
             </span>
           </div>
+
           <div className="flex items-center gap-1 pointer-events-auto ml-auto">
             <div
               className="flex rounded-lg border border-gray-200 dark:border-slate-600 overflow-hidden text-xs font-medium"
@@ -886,6 +892,7 @@ const Chat = ({ isDark = false, setIsDark }) => {
               >
                 اردو
               </button>
+
               <button
                 type="button"
                 onClick={() => setReplyStylePreference("en")}
@@ -899,6 +906,7 @@ const Chat = ({ isDark = false, setIsDark }) => {
                 EN
               </button>
             </div>
+
             {loggedIn && (
               <button
                 type="button"
@@ -911,266 +919,412 @@ const Chat = ({ isDark = false, setIsDark }) => {
             )}
           </div>
         </header>
-      {voiceChatActive && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center">
-            <div
-              className={`w-20 h-20 mx-auto rounded-full mb-4 flex items-center justify-center ${
-                voicePhase === "listening"
-                  ? "bg-indigo-500 animate-pulse"
-                  : voicePhase === "speaking"
-                    ? "bg-green-500 animate-pulse"
-                    : "bg-slate-400"
-              }`}
-            >
-              <span className="text-3xl text-white">
-                {voicePhase === "speaking" ? "🔊" : "🎤"}
-              </span>
+
+        {/* Voice Chat Modal */}
+        {voiceChatActive && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center">
+              <div
+                className={`w-20 h-20 mx-auto rounded-full mb-4 flex items-center justify-center ${
+                  voicePhase === "listening"
+                    ? "bg-indigo-500 animate-pulse"
+                    : voicePhase === "speaking"
+                      ? "bg-green-500 animate-pulse"
+                      : "bg-slate-400"
+                }`}
+              >
+                <span className="text-3xl text-white">
+                  {voicePhase === "speaking" ? "🔊" : "🎤"}
+                </span>
+              </div>
+
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                {voicePhaseLabel}
+              </p>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                English replies · transcript in chat
+              </p>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Say “explain” for steps, or ask a problem to solve
+              </p>
+
+              <button
+                type="button"
+                onClick={stopVoiceChat}
+                className="mt-6 w-full py-3 rounded-full bg-red-500 text-white font-medium hover:bg-red-600"
+              >
+                End voice chat
+              </button>
             </div>
-            <p className="text-lg font-semibold text-gray-900 dark:text-white">
-              {voicePhaseLabel}
+          </div>
+        )}
+
+        {/* Messages Area */}
+        <div className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden chat-scroll scrollbar-hide pt-14">
+          <div className="max-w-3xl mx-auto w-full px-4 py-6 pb-6">
+
+            {/* Welcome Screen */}
+           {messages.length === 0 && !imageAttachment && (
+  <div className="text-center mt-12 md:mt-16">
+
+    {/* Guest status */}
+    {!loggedIn && (
+      <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full
+        bg-white dark:bg-slate-800
+        border border-gray-200 dark:border-slate-700
+        text-gray-500 dark:text-gray-300
+        text-xs font-medium">
+        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+        Guest access
+      </div>
+    )}
+
+    {/* Welcome */}
+    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+      Hi, I'm{" "}
+      <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+        MathVox
+      </span>
+    </h1>
+
+    <p className="text-gray-500 dark:text-gray-400 mt-3 text-base">
+      {t.where_start}
+    </p>
+
+    {/* Guest information */}
+    {!loggedIn && (
+      <div className="max-w-xl mx-auto mt-6 text-left animate-fade-up">
+
+    <div className="rounded-2xl border border-gray-200 dark:border-slate-700
+  bg-white dark:bg-slate-800
+  shadow-sm transition-all duration-300
+  hover:shadow-md hover:-translate-y-0.5">
+
+          {/* Header */}
+          <div className="px-5 py-4 flex items-center gap-3">
+
+            <div className="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950/40
+              flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.5 20.25a7.5 7.5 0 0115 0"
+                />
+              </svg>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                Guest access
+              </h3>
+
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                You can use MathVox without creating an account.
+              </p>
+            </div>
+
+          </div>
+
+          {/* Features */}
+          <div className="px-5 py-3.5 border-t border-gray-100 dark:border-slate-700">
+
+            <p className="text-[11px] font-semibold uppercase tracking-wider
+              text-gray-400 dark:text-gray-500 mb-3">
+              Available features
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              English replies · transcript in chat
+
+            <div className="grid grid-cols-2 gap-y-2.5 gap-x-4">
+
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <span className="text-indigo-500">✓</span>
+                Math solving
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <span className="text-indigo-500">✓</span>
+                Step-by-step help
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <span className="text-indigo-500">✓</span>
+                Image & OCR
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <span className="text-indigo-500">✓</span>
+                Voice features
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Account CTA */}
+          <div className="px-5 py-3.5 border-t border-gray-100 dark:border-slate-700 
+  flex items-center justify-between gap-4">
+
+            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+              Create an account to save your conversations and progress.
             </p>
-            <p className="text-xs text-gray-400 mt-1">
-              Say “explain” for steps, or ask a problem to solve
-            </p>
+
+            <Link
+              to="/signup"
+              className="shrink-0 px-4 py-2 rounded-lg
+                bg-[#5d44f8] text-white text-sm font-semibold
+                hover:bg-indigo-600 transition-colors"
+            >
+              Sign up
+            </Link>
+
+          </div>
+
+        </div>
+
+      </div>
+    )}
+
+  </div>
+)}
+            {/* Messages */}
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${
+                  msg.type === "user" ? "justify-end" : "justify-start"
+                } mt-4`}
+              >
+                <div
+                  className={`flex flex-col max-w-[85%] ${
+                    msg.type === "user" ? "items-end" : "items-start"
+                  }`}
+                >
+                  <div
+                    className={`rounded-2xl shadow text-sm md:text-base overflow-hidden ${
+                      msg.type === "user"
+                        ? "bg-indigo-500 text-white"
+                        : "bg-white dark:bg-slate-800 border text-gray-900 dark:text-white"
+                    }`}
+                  >
+                    {msg.imageUrl && (
+                      <img
+                        src={msg.imageUrl}
+                        alt="Upload"
+                        className="max-h-48 w-full object-contain bg-black/10"
+                      />
+                    )}
+
+                    <div className="px-4 py-3 whitespace-pre-wrap max-h-[min(50vh,320px)] overflow-y-auto chat-scroll">
+                      {msg.viaVoice && (
+                        <span className="text-xs opacity-70 block mb-1">
+                          🎤 voice
+                        </span>
+                      )}
+                      {msg.text}
+                    </div>
+                  </div>
+
+                  {msg.type === "bot" && (
+                    <button
+                      type="button"
+                      onClick={() => speakText(msg.text)}
+                      className="mt-1 text-xs text-gray-400 hover:text-indigo-500"
+                    >
+                      🔊 Listen
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {dictating && !voiceChatActive && (
+              <div className="mt-4 text-sm text-indigo-600 dark:text-indigo-300">
+                🎤 Dictation — speaking into text box…
+              </div>
+            )}
+
+            {loading && !voiceChatActive && (
+              <div className="mt-4 px-4 py-3 rounded-2xl bg-gray-200 dark:bg-slate-700 text-sm animate-pulse">
+                MathVox is thinking…
+              </div>
+            )}
+
+            <div ref={bottomRef} />
+          </div>
+        </div>
+
+        {/* Input Area */}
+        <div className="shrink-0 max-h-[min(48dvh,420px)] overflow-y-auto overflow-x-hidden chat-scroll px-4 pb-4 pt-2 border-t border-gray-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+
+          {/* Image Attachment */}
+          {imageAttachment && (
+            <div className="max-w-3xl mx-auto mb-2 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg overflow-hidden">
+              
+              <div className="relative">
+                <img
+                  src={imageAttachment.previewUrl}
+                  alt="Preview"
+                  className="w-full max-h-36 object-contain bg-gray-50 dark:bg-slate-900"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => clearImageAttachment(true)}
+                  disabled={ocrLoading}
+                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/65 text-white text-xl leading-none hover:bg-black/85"
+                  aria-label="Remove image"
+                >
+                  ×
+                </button>
+
+                {/* OCR Loading Overlay */}
+                {ocrLoading && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm">
+                    Reading… {ocrProgress}%
+                  </div>
+                )}
+              </div>
+
+              <div className="p-3 border-t border-gray-100 dark:border-slate-700">
+                <p className="text-xs text-gray-500 mb-1">
+                  Extracted text (worksheets: one problem per line; long
+                  expressions stay as one block):
+                </p>
+
+                <textarea
+                  ref={extractedInputRef}
+                  value={imageAttachment.extractedText}
+                  onChange={(e) => updateExtractedText(e.target.value)}
+                  onInput={(e) => resizeTextarea(e.target, 280)}
+                  rows={1}
+                  disabled={ocrLoading}
+                  className="w-full rounded-lg border border-gray-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-2 py-1.5 text-sm outline-none resize-none overflow-y-auto min-h-[48px] max-h-[280px]"
+                  style={{ height: "48px" }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Explain Button */}
+          <div className="max-w-3xl mx-auto mb-2 flex flex-wrap gap-2 text-xs text-gray-500">
             <button
               type="button"
-              onClick={stopVoiceChat}
-              className="mt-6 w-full py-3 rounded-full bg-red-500 text-white font-medium hover:bg-red-600"
+              onClick={runExplain}
+              disabled={loading || !canSend || voiceChatActive}
+              className="rounded-lg border border-indigo-300 px-2 py-1 text-indigo-600 disabled:opacity-40"
             >
-              End voice chat
+              Explain
+            </button>
+          </div>
+
+          {/* Chat Input */}
+          <div className="max-w-3xl mx-auto flex items-center gap-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 shadow-xl rounded-[28px] px-2 py-2">
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImagePick}
+            />
+
+            {/* Upload */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading || ocrLoading || voiceChatActive}
+              title="Upload image"
+              className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-xl leading-none text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-40"
+            >
+              +
+            </button>
+
+            {/* Text Input */}
+            <textarea
+              ref={questionInputRef}
+              rows={1}
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onInput={(e) => resizeTextarea(e.target, 200)}
+              onKeyDown={handleKeyPress}
+              disabled={loading || voiceChatActive}
+              placeholder={
+                voiceChatActive ? "Voice chat active…" : "Ask anything"
+              }
+              className="flex-1 bg-transparent outline-none text-sm md:text-base placeholder:text-gray-400 resize-none overflow-y-auto py-2.5 min-h-[40px] max-h-[200px]"
+              style={{ height: "40px" }}
+            />
+
+            {/* Voice to Text */}
+            <button
+              type="button"
+              onClick={toggleDictation}
+              disabled={loading || ocrLoading || voiceChatActive}
+              title="Voice to text"
+              className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center disabled:opacity-40 ${
+                dictating
+                  ? "bg-red-100 text-red-600 animate-pulse"
+                  : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-5 h-5"
+              >
+                <path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 9a7 7 0 007-7h-2a5 5 0 01-10 0H5a7 7 0 007 7z" />
+              </svg>
+            </button>
+
+            {/* Voice Conversation */}
+            <button
+              type="button"
+              onClick={voiceChatActive ? stopVoiceChat : startVoiceChat}
+              disabled={loading || ocrLoading}
+              title="Voice chat — talk back and forth"
+              className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                voiceChatActive
+                  ? "bg-indigo-500 text-white animate-pulse"
+                  : "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-5 h-5"
+              >
+                <path d="M12 3a9 9 0 019 9v3a3 3 0 01-3 3h-1v-4h1a1 1 0 001-1v-3a7 7 0 10-14 0v3a1 1 0 001 1h1v4H6a3 3 0 01-3-3v-3a9 9 0 019-9z" />
+              </svg>
+            </button>
+
+            {/* Solve */}
+            <button
+              type="button"
+              onClick={runSolve}
+              disabled={loading || !canSend || voiceChatActive}
+              title="Solve"
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center disabled:opacity-40 hover:bg-indigo-600"
+            >
+              ➤
             </button>
           </div>
         </div>
-      )}
-
-      <div
-        className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden chat-scroll pt-14"
-      >
-        <div className="max-w-3xl mx-auto w-full px-4 py-6 pb-6">
-
-        {messages.length === 0 && !imageAttachment && (
-          <div className="text-center mt-24">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-              Hi, I'm{" "}
-              <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
-                MathVox
-              </span>
-            </h1>
-            <p className="text-gray-400 mt-2">{t.where_start}</p>
-          </div>
-        )}
-
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"} mt-4`}
-          >
-            <div
-              className={`flex flex-col max-w-[85%] ${
-                msg.type === "user" ? "items-end" : "items-start"
-              }`}
-            >
-              <div
-                className={`rounded-2xl shadow text-sm md:text-base overflow-hidden ${
-                  msg.type === "user"
-                    ? "bg-indigo-500 text-white"
-                    : "bg-white dark:bg-slate-800 border text-gray-900 dark:text-white"
-                }`}
-              >
-                {msg.imageUrl && (
-                  <img
-                    src={msg.imageUrl}
-                    alt="Upload"
-                    className="max-h-48 w-full object-contain bg-black/10"
-                  />
-                )}
-                <div className="px-4 py-3 whitespace-pre-wrap max-h-[min(50vh,320px)] overflow-y-auto chat-scroll">
-                  {msg.viaVoice && (
-                    <span className="text-xs opacity-70 block mb-1">
-                      🎤 voice
-                    </span>
-                  )}
-                  {msg.text}
-                </div>
-              </div>
-
-              {msg.type === "bot" && (
-                <button
-                  type="button"
-                  onClick={() => speakText(msg.text)}
-                  className="mt-1 text-xs text-gray-400 hover:text-indigo-500"
-                >
-                  🔊 Listen
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {dictating && !voiceChatActive && (
-          <div className="mt-4 text-sm text-indigo-600 dark:text-indigo-300">
-            🎤 Dictation — speaking into text box…
-          </div>
-        )}
-
-        {loading && !voiceChatActive && (
-          <div className="mt-4 px-4 py-3 rounded-2xl bg-gray-200 dark:bg-slate-700 text-sm animate-pulse">
-            MathVox is thinking…
-          </div>
-        )}
-
-        <div ref={bottomRef} />
-        </div>
-      </div>
-
-      <div className="shrink-0 max-h-[min(48dvh,420px)] overflow-y-auto overflow-x-hidden chat-scroll px-4 pb-4 pt-2 border-t border-gray-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
-
-        {imageAttachment && (
-          <div className="max-w-3xl mx-auto mb-2 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg overflow-hidden">
-            <div className="relative">
-              <img
-                src={imageAttachment.previewUrl}
-                alt="Preview"
-                className="w-full max-h-36 object-contain bg-gray-50 dark:bg-slate-900"
-              />
-              <button
-                type="button"
-                onClick={() => clearImageAttachment(true)}
-                disabled={ocrLoading}
-                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/65 text-white text-xl leading-none hover:bg-black/85"
-                aria-label="Remove image"
-              >
-                ×
-              </button>
-              {ocrLoading && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm">
-                  Reading… {ocrProgress}%
-                </div>
-              )}
-            </div>
-            <div className="p-3 border-t border-gray-100 dark:border-slate-700">
-              <p className="text-xs text-gray-500 mb-1">
-                Extracted text (worksheets: one problem per line; long expressions stay as one block):
-              </p>
-              <textarea
-                ref={extractedInputRef}
-                value={imageAttachment.extractedText}
-                onChange={(e) => updateExtractedText(e.target.value)}
-                onInput={(e) => resizeTextarea(e.target, 280)}
-                rows={1}
-                disabled={ocrLoading}
-                className="w-full rounded-lg border border-gray-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-2 py-1.5 text-sm outline-none resize-none overflow-y-auto min-h-[48px] max-h-[280px]"
-                style={{ height: "48px" }}
-              />
-            </div>
-          </div>
-        )}
-
-        <div className="max-w-3xl mx-auto mb-2 flex flex-wrap gap-2 text-xs text-gray-500">
-          <button
-            type="button"
-            onClick={runExplain}
-            disabled={loading || !canSend || voiceChatActive}
-            className="rounded-lg border border-indigo-300 px-2 py-1 text-indigo-600 disabled:opacity-40"
-          >
-            Explain
-          </button>
-        </div>
-
-        {/* ChatGPT-style input bar */}
-        <div className="max-w-3xl mx-auto flex items-center gap-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 shadow-xl rounded-[28px] px-2 py-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImagePick}
-          />
-
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={loading || ocrLoading || voiceChatActive}
-            title="Upload image"
-            className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-xl leading-none text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-40"
-          >
-            +
-          </button>
-
-          <textarea
-            ref={questionInputRef}
-            rows={1}
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            onInput={(e) => resizeTextarea(e.target, 200)}
-            onKeyDown={handleKeyPress}
-            disabled={loading || voiceChatActive}
-            placeholder={
-              voiceChatActive ? "Voice chat active…" : "Ask anything"
-            }
-            className="flex-1 bg-transparent outline-none text-sm md:text-base placeholder:text-gray-400 resize-none overflow-y-auto py-2.5 min-h-[40px] max-h-[200px]"
-            style={{ height: "40px" }}
-          />
-
-          {/* Voice to text (dictation) */}
-          <button
-            type="button"
-            onClick={toggleDictation}
-            disabled={loading || ocrLoading || voiceChatActive}
-            title="Voice to text"
-            className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center disabled:opacity-40 ${
-              dictating
-                ? "bg-red-100 text-red-600 animate-pulse"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-5 h-5"
-            >
-              <path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 9a7 7 0 007-7h-2a5 5 0 01-10 0H5a7 7 0 007 7z" />
-            </svg>
-          </button>
-
-          {/* Voice conversation (like ChatGPT call) */}
-          <button
-            type="button"
-            onClick={voiceChatActive ? stopVoiceChat : startVoiceChat}
-            disabled={loading || ocrLoading}
-            title="Voice chat — talk back and forth"
-            className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-              voiceChatActive
-                ? "bg-indigo-500 text-white animate-pulse"
-                : "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-5 h-5"
-            >
-              <path d="M12 3a9 9 0 019 9v3a3 3 0 01-3 3h-1v-4h1a1 1 0 001-1v-3a7 7 0 10-14 0v3a1 1 0 001 1h1v4H6a3 3 0 01-3-3v-3a9 9 0 019-9z" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            onClick={runSolve}
-            disabled={loading || !canSend || voiceChatActive}
-            title="Solve"
-            className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center disabled:opacity-40 hover:bg-indigo-600"
-          >
-            ➤
-          </button>
-        </div>
-      </div>
       </div>
     </div>
   );
