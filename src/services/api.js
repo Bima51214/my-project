@@ -447,3 +447,102 @@ export const loginUser = async (email, password) => {
 
   return res.json();
 };
+
+// ✅ ADMIN - GET ALL USERS
+export const getAdminUsers = async () => {
+  const res = await fetch(`${BASE_URL}/admin/users`);
+
+  const data = await res.json().catch(() => []);
+
+  if (!res.ok) {
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : "Could not load users"
+    );
+  }
+
+  return data;
+};
+
+
+
+
+
+
+
+// ✅ ADMIN - GET SETTINGS
+export const getAdminSettings = async () => {
+  const res = await fetch(`${BASE_URL}/admin/settings`);
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : "Could not load settings"
+    );
+  }
+
+  return data;
+};
+
+
+// ✅ ADMIN - UPDATE SETTINGS
+export const updateAdminSettings = async (settings) => {
+  const res = await fetch(`${BASE_URL}/admin/settings`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(settings),
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : "Could not save settings"
+    );
+  }
+
+  return data;
+};
+
+// ✅ ADMIN - GET DASHBOARD ANALYTICS
+export const getAdminAnalytics = async () => {
+  const res = await fetch(`${BASE_URL}/admin/analytics`);
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : "Could not load dashboard analytics"
+    );
+  }
+
+  return data;
+};
+
+
+// ✅ ADMIN - GET ALL CONVERSATIONS
+export const getAdminConversations = async () => {
+  const res = await fetch(`${BASE_URL}/admin/conversations`);
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : "Could not load conversations"
+    );
+  }
+
+  return data;
+};
